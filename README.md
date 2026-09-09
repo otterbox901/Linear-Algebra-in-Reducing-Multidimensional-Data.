@@ -1,4 +1,4 @@
-# EE-PCA-vs-LDA
+# Linear-Algebra-in-Reducing-Multidimensional-Data.
 
 A short report and analysis comparing Principal Component Analysis (PCA) and Linear Discriminant Analysis (LDA) for EEG / electrophysiology-style data. The repository contains the R code used to run the analyses and the TeX source for the manuscript/report.
 
