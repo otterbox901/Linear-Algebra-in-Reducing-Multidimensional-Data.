@@ -11,16 +11,6 @@ Goals:
 - Provide reproducible R scripts to run the analyses and regenerate the figures and tables.
 - Produce a manuscript (PDF) using the included TeX source.
 
-## Repository structure
-
-- `data/` — (optional) raw or preprocessed datasets used by the analysis (not included in repo by default).
-- `scripts/` — R scripts to run preprocessing, PCA, LDA, and evaluation.
-- `figures/` — generated figures (output).
-- `results/` — numeric results and summary tables (output).
-- `paper/` — TeX source for the manuscript (e.g., `paper.tex`, `.bib`, images).
-- `README.md` — this file.
-
-If your repository differs, update these paths accordingly.
 
 ## Requirements
 
