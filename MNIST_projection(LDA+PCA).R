@@ -5,9 +5,6 @@ library(keras)
 library(MASS)  # For LDA
 library(tidyr)
 
-# ============================================
-# LOAD AND PREPARE MNIST DATA
-# ============================================
 
 # Load MNIST dataset
 mnist <- dataset_mnist()
@@ -47,10 +44,6 @@ if(any(is.na(mnist_scaled))) {
 }
 
 cat("Final data dimensions:", dim(mnist_scaled), "\n")
-
-# ============================================
-# FUNCTION DEFINITIONS FOR METRICS
-# ============================================
 
 # Function to calculate class means
 calculate_class_means <- function(data, labels) {
@@ -138,11 +131,6 @@ calculate_pairwise_distances <- function(class_means) {
   return(distances)
 }
 
-# ============================================
-# PERFORM PCA
-# ============================================
-
-cat("\n========== PERFORMING PCA ==========\n")
 
 # Perform PCA
 pca_result <- prcomp(mnist_scaled, center = FALSE, scale.  = FALSE)
@@ -161,17 +149,10 @@ pca_Sw <- calculate_within_class_scatter(pca_data, labels)
 pca_Sb <- calculate_between_class_scatter(pca_data, labels)
 pca_metrics <- calculate_metrics(pca_Sw, pca_Sb)
 
-cat("\n----- PCA METRICS (", n_pca_components, "components ) -----\n")
 cat(sprintf("Within-Class Scatter (trace Sw): %.4f\n", pca_metrics$within_scatter))
 cat(sprintf("Between-Class Distance (trace Sb): %.4f\n", pca_metrics$between_distance))
 cat(sprintf("Separation Ratio (Sb/Sw): %.6f\n", pca_metrics$separation_ratio))
 cat(sprintf("Fisher Criterion (trace Sw^-1 Sb): %.4f\n", pca_metrics$fisher_criterion))
-
-# ============================================
-# PERFORM LDA
-# ============================================
-
-cat("\n========== PERFORMING LDA ==========\n")
 
 # LDA requires fewer features than samples per class
 # First reduce with PCA, then apply LDA
@@ -205,11 +186,6 @@ cat(sprintf("Between-Class Distance (trace Sb): %.4f\n", lda_metrics$between_dis
 cat(sprintf("Separation Ratio (Sb/Sw): %.6f\n", lda_metrics$separation_ratio))
 cat(sprintf("Fisher Criterion (trace Sw^-1 Sb): %.4f\n", lda_metrics$fisher_criterion))
 
-# ============================================
-# COMPARISON ACROSS DIFFERENT DIMENSIONS
-# ============================================
-
-cat("\n========== METRICS ACROSS DIMENSIONS ==========\n")
 
 # Calculate metrics for various PCA dimensions
 pca_dims <- c(2, 5, 10, 20, 30, 50, 100, 150, 200)
@@ -249,11 +225,6 @@ all_comparison <- rbind(pca_comparison, lda_comparison)
 cat("\nComparison Table:\n")
 print(all_comparison, digits = 4)
 
-# ============================================
-# PAIRWISE CLASS DISTANCES
-# ============================================
-
-cat("\n========== PAIRWISE CLASS DISTANCES ==========\n")
 
 # PCA pairwise distances (using first 2 components for visualization)
 pca_2d <- pca_result$x[, 1:2]
@@ -271,11 +242,6 @@ lda_pairwise <- calculate_pairwise_distances(lda_2d_means)
 cat("\nLDA (2D) Pairwise Class Distances:\n")
 print(round(lda_pairwise, 2))
 
-# ============================================
-# VISUALIZATIONS
-# ============================================
-
-cat("\n========== CREATING VISUALIZATIONS ==========\n")
 
 # 1. Comparison bar plot
 comparison_long <- all_comparison %>%
@@ -385,13 +351,6 @@ p5 <- ggplot(lda_pairwise_df, aes(x = Class1, y = Class2, fill = Distance)) +
 
 print(p5)
 
-# ============================================
-# FINAL SUMMARY
-# ============================================
-
-cat("\n========================================\n")
-cat("         FINAL SUMMARY COMPARISON        \n")
-cat("========================================\n\n")
 
 cat("METHOD        | DIMS | WITHIN SCATTER | BETWEEN DIST | SEP.  RATIO | FISHER CRIT.\n")
 cat("--------------|------|----------------|--------------|------------|-------------\n")
@@ -416,14 +375,11 @@ cat("-----------------\n")
 
 if(lda_metrics$separation_ratio > pca_9_metrics$separation_ratio) {
   improvement <- ((lda_metrics$separation_ratio / pca_9_metrics$separation_ratio) - 1) * 100
-  cat(sprintf("✓ LDA achieves %. 1f%% higher separation ratio than PCA (at same dimensions)\n", improvement))
+  cat(sprintf("LDA achieves %. 1f%% higher separation ratio than PCA (at same dimensions)\n", improvement))
 } else {
-  cat("✓ PCA achieves higher separation ratio than LDA at same dimensions\n")
+  cat(" PCA achieves higher separation ratio than LDA at same dimensions\n")
 }
 
-cat("✓ LDA maximizes between-class variance while minimizing within-class variance\n")
-cat("✓ PCA maximizes total variance without considering class labels\n")
-cat("✓ For classification tasks, LDA typically provides better class separation\n")
 
 # Save plots
 ggsave("separation_ratio_comparison. png", p1, width = 10, height = 6, dpi = 300)
